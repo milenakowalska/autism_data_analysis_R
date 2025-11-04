@@ -23,3 +23,61 @@ df <- read.csv("./dataset/Autism Screening.csv")
 head(df)
 ```
 
+```{r}
+names(df)
+```
+```{r}
+dim(df)
+```
+
+```{r}
+dt <- as.data.table(df)
+```
+
+```{r}
+str(dt)
+```
+
+## Check for missing values
+
+```{r}
+colSums(is.na(dt))
+```
+
+```{r}
+dt[, age := as.numeric(age)]
+```
+
+```{r}
+anyNA(df$age)
+```
+
+```{r}
+dt <- dt[!is.na(age)]
+```
+
+```{r}
+mean(dt$age)
+```
+
+```{r}
+ggplot(dt, aes(x=age)) + 
+  geom_histogram(fill="red", color="black") + 
+  xlim(c(0, 100)) + 
+  guides(fill = "none") + 
+  ggtitle("Distribution of age among participants")
+```
+
+
+```{r}
+ggplot(dt, aes(x=gender, fill=gender)) + 
+  geom_bar(color="black") + 
+  scale_fill_discrete(
+    labels=c("f"="Female", "m"="Male")
+  ) + 
+  scale_x_discrete(
+    labels=c("f"="Female", "m"="Male")
+  ) + 
+  ggtitle("Distribution of gender among participants")
+```
+
