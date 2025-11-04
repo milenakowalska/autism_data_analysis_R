@@ -1,0 +1,25 @@
+---
+title: "Autism Screening Data Analysis Project"
+output:
+  html_document: default
+date: "2025-11-04"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
+library(tidyverse)
+library(ggplot2)
+library(plotly)
+```
+
+# Loading data and initial data exploration
+
+```{r}
+df <- read.csv("./dataset/Autism Screening.csv")
+```
+
+```{r}
+head(df)
+```
+
