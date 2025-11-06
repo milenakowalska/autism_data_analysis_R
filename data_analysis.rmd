@@ -137,6 +137,31 @@ ggplot(corr, aes(x=A_Score, y=Correlation, fill=A_Score)) +
 ```
 
 ## Is there a difference in the distribution of autism diagnoses between genders?
+
+Perform ANOVA test to examine the difference between genders
+
+```{r}
+anova_result <- aov(as.numeric(Class.ASD) ~ as.factor(gender), dt)
+```
+
+```{r}
+summary(anova_result)
+```
+The ANOVA results indicate a statistically significant difference in the number of autism diagnoses between genders (p-value = 0.033). 
+
+```{r}
+ggplot(dt, aes(
+    x = factor(gender, levels=c("f", "m"), labels=c("Female", "Male")), 
+    fill = factor(Class.ASD, levels=c(0, 1), labels=c("Non-autistic", "Autistic")))) + 
+  geom_bar(position = "stack") +
+  labs(
+    x = "",
+    fill = "",
+    title = "Distribution of autism diagnoses between genders"
+  )
+```
+The graph indicates that among participants women were statistically more likely to be diagnosed with autism compared to men.
+
 ## Do males and females with autism differ in their average AQ-10 total scores?
 ## Does the prevalence of autism vary across different ethnic groups?
 ## Is having a family history of autism associated with higher AQ-10 scores?
