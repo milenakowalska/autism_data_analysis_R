@@ -13,6 +13,16 @@ library(ggplot2)
 library(plotly)
 ```
 
+# About data analysis
+The aim of this study is to explore how demographic factors (gender, ethnicity, and family autism history) and individual AQ-10 item responses relate to autism classification in adults.
+
+## Research questions:
+* Which of the ten AQ-10 items (A1–A10) are most strongly associated with an autism diagnosis?
+* Is there a difference in the distribution of autism diagnoses between genders?
+* Do males and females with autism differ in their average AQ-10 total scores?
+* Does the prevalence of autism vary across different ethnic groups?
+* Is having a family history of autism associated with higher AQ-10 scores?
+
 # Loading data and initial data exploration
 
 ```{r}
@@ -26,49 +36,43 @@ head(df)
 ```{r}
 names(df)
 ```
+Check the dimensions: the dataset consists of 704 observations and 21 variables.
 ```{r}
 dim(df)
 ```
 
+Convert to data table
 ```{r}
 dt <- as.data.table(df)
 ```
 
+Examine the structure of the data 
 ```{r}
 str(dt)
 ```
 
-## Check for missing values
+# Data preprocessing
 
+Select variables of interest
+```{r}
+dt <- dt[, c("A1_Score", "A2_Score", "A3_Score","A4_Score", "A5_Score", "A6_Score","A7_Score", "A8_Score", "A9_Score","A10_Score", "gender","ethnicity", "austim", "contry_of_res", "result", "Class.ASD")]
+```
+
+Check for missing values
 ```{r}
 colSums(is.na(dt))
 ```
-
+Convert gender to factor
 ```{r}
-dt[, age := as.numeric(age)]
+dt[, gender := as.factor(gender)]
 ```
 
+Convert class to numeric
 ```{r}
-anyNA(df$age)
+dt$Class.ASD <- ifelse(dt$Class.ASD == "YES", 1, 0)
 ```
 
-```{r}
-dt <- dt[!is.na(age)]
-```
-
-```{r}
-mean(dt$age)
-```
-
-```{r}
-ggplot(dt, aes(x=age)) + 
-  geom_histogram(fill="red", color="black") + 
-  xlim(c(0, 100)) + 
-  guides(fill = "none") + 
-  ggtitle("Distribution of age among participants")
-```
-
-
+## Distribution of gender
 ```{r}
 ggplot(dt, aes(x=gender, fill=gender)) + 
   geom_bar(color="black") + 
@@ -80,4 +84,61 @@ ggplot(dt, aes(x=gender, fill=gender)) +
   ) + 
   ggtitle("Distribution of gender among participants")
 ```
+## Distribution of ethnicity
+```{r}
+ggplot(dt, aes(x=ethnicity, fill=ethnicity)) + 
+  geom_bar(color="black") + 
+  ggtitle("Distribution of ethnicity among participants") +
+  theme(axis.text.x = element_text(angle=60, hjust=1))
+```
+## Distribution of autistic vs. non-autistic participants
+```{r}
+ggplot(dt, aes(x=Class.ASD, fill=as.factor(Class.ASD))) + 
+  geom_bar(color="black") +
+  labs(
+    title = "Distribution of autistic vs. non-autistic participants",
+    fill = "Group"
+  ) + 
+  scale_fill_discrete(
+    labels=c("0"="Non-autistic", "1"="Autistic")
+  ) + 
+  scale_x_discrete(labels=none) +
+  xlab("")
+```
 
+# Data Analysis
+
+## Which of the ten AQ-10 items (A1–A10) are most strongly associated with an autism diagnosis?
+
+```{r}
+correlations <- sapply(dt[, 1:10], function(x) cor(x, dt[[16]]))
+```
+
+```{r}
+correlations
+```
+
+```{r}
+corr <- data.frame(
+  A_Score=names(correlations),
+  Correlation=as.numeric(correlations)
+)
+```
+
+```{r}
+corr$A_Score <- factor(corr$A_Score, levels = corr$A_Score)
+```
+
+
+```{r}
+ggplot(corr, aes(x=A_Score, y=Correlation, fill=A_Score)) + 
+  geom_bar(stat = "identity", color="black") + 
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+```
+
+## Is there a difference in the distribution of autism diagnoses between genders?
+## Do males and females with autism differ in their average AQ-10 total scores?
+## Does the prevalence of autism vary across different ethnic groups?
+## Is having a family history of autism associated with higher AQ-10 scores?
+
+# Summary
