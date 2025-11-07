@@ -162,8 +162,44 @@ ggplot(dt, aes(
 ```
 The graph indicates that among participants women were statistically more likely to be diagnosed with autism compared to men.
 
-## Do males and females with autism differ in their average AQ-10 total scores?
+## Do males and females differ in their average AQ-10 total scores?
+
+Perform ANOVA test:
+```{r}
+anova_result <- aov(as.numeric(result) ~ as.factor(gender), dt)
+```
+
+```{r}
+summary(anova_result)
+```
+
+There is no statistically significant difference in the distribution of results between genders (p = 0.263). 
+
+```{r}
+ggplot(dt, aes(x="", y=result, fill=factor(gender, levels=c("f", "m"), labels=c("Female", "Male")))) +
+  geom_boxplot() +
+  facet_wrap(~gender) +
+  labs(
+    fill="Gender",
+    x="",
+    title="AQ-10 total scores distribution among all participants"
+  )
+```
+
+```{r}
+ggplot(dt, aes(x=result, fill=factor(gender, levels=c("f", "m"), labels=c("Female", "Male")))) +
+  geom_histogram(position = "dodge") +
+  labs(
+    fill="Gender",
+    title="AQ-10 total scores distribution among all participants"
+  )
+```
+The plots illustrate that although the third quartile (Q3) for women is slightly higher - indicating that women tend to achieve marginally higher scores - the median scores are comparable across genders.
+
 ## Does the prevalence of autism vary across different ethnic groups?
+
+
+
 ## Is having a family history of autism associated with higher AQ-10 scores?
 
 # Summary
