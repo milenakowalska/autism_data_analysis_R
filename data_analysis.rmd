@@ -1,6 +1,7 @@
 ---
 title: "Autism Screening Data Analysis Project"
 output:
+  pdf_document: default
   html_document: default
 date: "2025-11-04"
 ---
@@ -62,7 +63,7 @@ Check for missing values
 ```{r}
 colSums(is.na(dt))
 ```
-Convert gender to factor
+Convert gender and autism to factor
 ```{r}
 dt[, gender := as.factor(gender)]
 ```
@@ -198,8 +199,105 @@ The plots illustrate that although the third quartile (Q3) for women is slightly
 
 ## Does the prevalence of autism vary across different ethnic groups?
 
+```{r}
+unique(dt$ethnicity)
+```
 
+
+Remove groups "Others", "others" and "?"
+```{r}
+filteredDT <- dt[ethnicity != "Others" & ethnicity != "?" & ethnicity != "others"]
+```
+
+```{r}
+dim(filteredDT)
+```
+
+Perform ANOVA test:
+```{r}
+anova_result <- aov(as.numeric(result) ~ as.factor(ethnicity), filteredDT)
+```
+
+```{r}
+summary(anova_result)
+```
+The results of the ANOVA test indicate statistical significance in the distribution of results across ethnic groups (marked as ***).
+
+```{r}
+filteredDT[, .(
+  meanResult = mean(result),
+  minResult = min(result),
+  maxResult = max(result),
+  medianResult = median(result),
+  numberOfParticipants = .N
+  ), by=ethnicity][order(-meanResult)]
+```
+
+
+```{r}
+ggplot(filteredDT, aes(x="", y=result, fill=factor(ethnicity))) +
+  geom_boxplot() +
+  facet_wrap(~ethnicity) +
+  labs(
+    fill="Ethnic group",
+    x="",
+    title="AQ-10 total scores distribution among all participants"
+  )
+```
+Further analysis indicated that participants identifying as Latino, White-European, and Black achieved the highest scores on the AQ10 screening, whereas those identifying as Pacifica, South Asian, and Middle Eastern obtained the lowest scores, suggesting they are less likely to score high on the autism screening test.
 
 ## Is having a family history of autism associated with higher AQ-10 scores?
 
+```{r}
+dt[]
+```
+
+
+Perform ANOVA test:
+```{r}
+dt$austim <- as.factor(dt$austim)
+```
+
+```{r}
+unique(dt$austim)
+```
+
+```{r}
+anova_result <- aov(as.numeric(result) ~ as.factor(austim), data = dt)
+```
+
+```{r}
+summary(anova_result)
+```
+The results of the ANOVA test indicate statistical significance of the family history of autism (marked as ***).
+
+```{r}
+dt[, .(
+  meanResult = mean(result),
+  minResult = min(result),
+  maxResult = max(result),
+  medianResult = median(result),
+  numberOfParticipants = .N
+  ), by=austim][order(-meanResult)]
+```
+
+```{r}
+ggplot(filteredDT, aes(x="", y=result, fill=factor(austim))) +
+  geom_boxplot() +
+  facet_wrap(~austim) +
+  labs(
+    fill="Family history",
+    x="",
+    title="Scores distribution among participants with and without family history"
+  )
+```
+
 # Summary
+
+The analysis explored factors associated with autism and AQ-10 screening results. Among the individual AQ-10 items, A6 (“I know how to tell if someone listening to me is getting bored”) and A9 (“I find it easy to work out what someone is thinking or feeling just by looking at their face”) showed the strongest correlation with autism diagnosis. In contrast, A8 (“I like to collect information about categories or things”) was the least significant question in relation to autism scores.
+
+No statistically significant difference was found between genders in the distribution of autism diagnoses or overall AQ-10 scores, although women were slightly more represented among those diagnosed.
+
+Ethnicity showed a significant effect: participants identifying as Latino, White-European, or Black tended to achieve higher AQ-10 scores, while those identifying as Middle Eastern, South Asian, or Pacifica had lower scores, indicating a lower likelihood of scoring high on the autism screening.
+
+Finally, a strong association was observed between family history of autism and higher AQ-10 results, with ANOVA confirming this factor as highly significant.
