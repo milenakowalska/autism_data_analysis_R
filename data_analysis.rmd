@@ -139,16 +139,16 @@ ggplot(corr, aes(x=A_Score, y=Correlation, fill=A_Score)) +
 
 ## Is there a difference in the distribution of autism diagnoses between genders?
 
-Perform ANOVA test to examine the difference between genders
+Perform t-test to examine the difference between genders
 
 ```{r}
-anova_result <- aov(as.numeric(Class.ASD) ~ as.factor(gender), dt)
+t_result <- t.test(as.numeric(Class.ASD) ~ as.factor(gender), dt)
 ```
 
 ```{r}
-summary(anova_result)
+print(t_result)
 ```
-The ANOVA results indicate a statistically significant difference in the number of autism diagnoses between genders (p-value = 0.033). 
+The t-test results indicate a statistically significant difference in the number of autism diagnoses between genders (p-value ~ 0.033). 
 
 ```{r}
 ggplot(dt, aes(
@@ -165,13 +165,13 @@ The graph indicates that among participants women were statistically more likely
 
 ## Do males and females differ in their average AQ-10 total scores?
 
-Perform ANOVA test:
+Perform t-test:
 ```{r}
-anova_result <- aov(as.numeric(result) ~ as.factor(gender), dt)
+t_result <- t.test(as.numeric(result) ~ as.factor(gender), dt)
 ```
 
 ```{r}
-summary(anova_result)
+print(t_result)
 ```
 
 There is no statistically significant difference in the distribution of results between genders (p = 0.263). 
@@ -249,11 +249,11 @@ Further analysis indicated that participants identifying as Latino, White-Europe
 ## Is having a family history of autism associated with higher AQ-10 scores?
 
 ```{r}
-dt[]
+head(dt)
 ```
 
 
-Perform ANOVA test:
+Perform t-test:
 ```{r}
 dt$austim <- as.factor(dt$austim)
 ```
@@ -263,13 +263,13 @@ unique(dt$austim)
 ```
 
 ```{r}
-anova_result <- aov(as.numeric(result) ~ as.factor(austim), data = dt)
+t_result <- t.test(as.numeric(result) ~ as.factor(austim), data = dt)
 ```
 
 ```{r}
-summary(anova_result)
+print(t_result)
 ```
-The results of the ANOVA test indicate statistical significance of the family history of autism (marked as ***).
+The results of the t-test indicate statistical significance of the family history of autism (marked as ***).
 
 ```{r}
 dt[, .(
@@ -300,4 +300,4 @@ No statistically significant difference was found between genders in the distrib
 
 Ethnicity showed a significant effect: participants identifying as Latino, White-European, or Black tended to achieve higher AQ-10 scores, while those identifying as Middle Eastern, South Asian, or Pacifica had lower scores, indicating a lower likelihood of scoring high on the autism screening.
 
-Finally, a strong association was observed between family history of autism and higher AQ-10 results, with ANOVA confirming this factor as highly significant.
+Finally, a strong association was observed between family history of autism and higher AQ-10 results, with the t-test confirming this factor as highly significant.
